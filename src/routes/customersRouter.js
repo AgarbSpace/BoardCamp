@@ -1,12 +1,13 @@
 import { Router } from "express";
-import getCustomerByIdController from "../controllers/getCustomerByIdController.js";
-import getCustomersController from "../controllers/getCustomersController.js";
-import postCustomersController from "../controllers/postCustomersController.js";
+import { getCustomerById, getCustomers, postCustomer, putCustomerById } from "../controllers/customersController.js";
+import { schemaValidateMiddleware } from "../middlewares/schemaValidateMiddleware.js";
+import customerSchema from "../schemas/customerSchema.js";
 
 const customersRouter = Router();
 
-customersRouter.get("/customers", getCustomersController);
-customersRouter.get("/customers/:id", getCustomerByIdController);
-customersRouter.post("/customers", postCustomersController);
+customersRouter.get("/customers", getCustomers);
+customersRouter.get("/customers/:id", getCustomerById);
+customersRouter.post("/customers", schemaValidateMiddleware(customerSchema) ,postCustomer);
+customersRouter.put("/customers/:id", putCustomerById);
 
 export default customersRouter;

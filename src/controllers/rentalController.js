@@ -1,6 +1,6 @@
 import connection from "../database.js";
 
-export default async function getRentalsController (request, response){
+export async function getRentals (request, response){
     try {
         
         const rentalsQuery = await connection.query(`SELECT * FROM rentals`)
@@ -9,7 +9,6 @@ export default async function getRentalsController (request, response){
 
     } catch (error) {
 
-        console.log(error);
-        response.sendStatus(500);
+        response.status(500).send(error);
     }
 }

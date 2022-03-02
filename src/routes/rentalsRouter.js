@@ -1,8 +1,8 @@
 import { Router } from "express";
-import getRentalsController from "../controllers/getRentalsController.js";
+import { getRentals } from "../controllers/rentalController.js";
 
 const rentalsRouter = Router();
 
-rentalsRouter.get("/rentals", getRentalsController);
+rentalsRouter.get("/rentals", getRentals);
 
 export default rentalsRouter;
