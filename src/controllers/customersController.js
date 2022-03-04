@@ -7,13 +7,18 @@ export async function getCustomerById (request, response){
         const {id} = request.params;
 
         const customerByIdQuery = await connection.query(`
-        SELECT * FROM customers WHERE id = $1`, [id]);
+            SELECT customers.*, TO_CHAR("birthday", 'YYYY-MM-DD') AS "birthday" 
+            FROM customers 
+            WHERE id = $1`, [id]
+        );
 
         if(customerByIdQuery.rows.length === 0){
             return response.sendStatus(404);
         }
 
-        response.send(customerByIdQuery.rows);
+        const customer = customerByIdQuery.rows[0];
+
+        response.send(customer);
 
     } catch (error) {
         
@@ -30,13 +35,21 @@ export async function getCustomers (request, response){
         if(cpf){
             
             const customerQueryByCpf = await connection.query(`
-            SELECT * FROM customers WHERE cpf LIKE '%${cpf}%'`);
+                SELECT customers.*, TO_CHAR("birthday", 'YYYY-MM-DD') AS "birthday"
+                FROM customers WHERE cpf LIKE '%${cpf}%'`
+            );
 
             return response.send(customerQueryByCpf.rows);
         }
         
-        const customersQuery = await connection.query(`SELECT * FROM customers `);
-        response.send(customersQuery.rows);
+        const customersQuery = await connection.query(`
+            SELECT customers.*, TO_CHAR("birthday", 'YYYY-MM-DD') AS "birthday" 
+            FROM customers `
+        );
+
+        const customers = customersQuery.rows;
+
+        response.send(customers);
 
     } catch (error) {
 
@@ -85,7 +98,7 @@ export async function postCustomer (request, response){
             return response.sendStatus(400);
         }
 
-        const insertCustomerQuery = connection.query(`
+        await connection.query(`
             INSERT INTO customers (name, phone, cpf, birthday)
             VALUES ($1, $2, $3, $4)`, [name, phone, cpf, birthday]);
 
@@ -120,7 +133,7 @@ export async function putCustomerById (request, response){
         SELECT * FROM customers 
         WHERE cpf = $1`, [cpf]);
 
-        if(findCpfQuery.rows.length !== 0){
+        if(findCpfQuery.rows.length > 0 && findCpfQuery.rows[0].id !== parseInt(id)){
 
             return response.sendStatus(409);
         }
@@ -150,10 +163,11 @@ export async function putCustomerById (request, response){
             return response.sendStatus(400);
         }
 
-        const updateCustomerQuery = await connection.query(`
-        UPDATE customers 
-        SET name=$1, phone=$2, cpf=$3, birthday=$4 
-        WHERE id =$5`, [name, phone, cpf, birthday, id]);
+        await connection.query(`
+            UPDATE customers 
+            SET name=$1, phone=$2, cpf=$3, birthday=$4 
+            WHERE id =$5`, [name, phone, cpf, birthday, id]
+        );
 
         response.sendStatus(200);
 

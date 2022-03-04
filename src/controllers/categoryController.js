@@ -33,7 +33,7 @@ export async function postCategory (request, response){
             return response.sendStatus(409);
         }
 
-        const insertcategoriesQuery = connection.query(`
+        await connection.query(`
         INSERT INTO categories (name)
         VALUES ($1)`, [name]);
         
