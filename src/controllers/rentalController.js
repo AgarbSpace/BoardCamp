@@ -116,7 +116,6 @@ export async function getRentals (request, response){
             game: {id: allRentals.gameId, name: allRentals.gameName, categoryId: allRentals.categoryId, categoryName: allRentals.categoryName}
         }));
 
-
         response.send(rental);
 
     } catch (error) {
@@ -136,7 +135,6 @@ export async function returnRental (request, response){
         FROM rentals
         WHERE id = $1`, [id]
         );
-        
         
         if(findRentalByIdQuery.rows.length > 0){
             
@@ -202,6 +200,7 @@ export async function returnRental (request, response){
         response.sendStatus(404);
 
     } catch (error) {
+        
         response.status(500).send(error);
     }
 }
